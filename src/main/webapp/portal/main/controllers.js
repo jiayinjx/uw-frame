@@ -50,23 +50,29 @@ define(['angular','require'], function(angular, require) {
   } ]);
 
   /* Username */
-  app.controller('SessionCheckController', [ 'mainService', 'MISC_URLS', function(mainService, MISC_URLS) {
+  app.controller('SessionCheckController', [ 'mainService', 'MISC_URLS', '$rootScope', function(mainService, MISC_URLS, $rootScope) {
     var that = this;
     that.user = [];
     that.feedbackURL = MISC_URLS.feedbackURL;
     that.back2ClassicURL = MISC_URLS.back2ClassicURL;
     that.whatsNewURL = MISC_URLS.whatsNewURL;
-
+    // default guestMode
+    $rootScope.GuestMode = false;
     mainService.getUser().then(function(result){
-      that.user = result;
+        that.user = result;
+        //Check guestMode
+        if (that.user.displayName === "Guest")
+            $rootScope.GuestMode = true;
+        });
+
     });
   }]);
-  
+
   app.controller('PortalPopupController', ['$localStorage', '$sessionStorage','$scope', '$document', 'APP_FLAGS', '$modal', 'portalFeaturesService', '$sanitize', function($localStorage, $sessionStorage, $scope, $document, APP_FLAGS, $modal, portalFeaturesService, $sanitize) {
      var openModal = function() {
       if (APP_FLAGS.features) {
         $scope.features = [];
-        
+
         portalFeaturesService.getFeatures().then(function(data) {
             var features = data;
             if (features.data.length > 0) {
